@@ -1,0 +1,10 @@
+# requirements.txt
+# Install with: pip install -r requirements.txt
+
+fastapi
+uvicorn[standard]
+httpx
+pydantic
+python-dotenv
+google-genai
+tavily-python

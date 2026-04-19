@@ -1,0 +1,456 @@
+Below is your **IMPLEMENTATION_PLAN.md**, strictly derived from the provided PRD, APP_FLOW, TECH_STACK, BACKEND_STRUCTURE, and FRONTEND_GUIDELINES.
+
+---
+
+# 📄 IMPLEMENTATION_PLAN.md
+
+**Blostem B2B AI Outreach Agent**
+**Timeline: 14 Days (Deploy by Day 2 mandatory)**
+
+---
+
+# 🚀 OVERVIEW
+
+* Architecture: Next.js (frontend) + FastAPI (backend) + Supabase (DB)
+* Core: **3-agent pipeline (Research → Draft → Compliance) + SSE streaming**
+* Priority:
+
+  1. Pipeline works
+  2. Compliance Aha Moment works
+  3. UI fidelity
+
+---
+
+# 📅 DAY-BY-DAY MILESTONE
+
+| Day       | Goal                                  |
+| --------- | ------------------------------------- |
+| Day 1     | Backend pipeline complete (local)     |
+| Day 2     | Full deploy (Render + Vercel working) |
+| Day 3–5   | Frontend core flow + SSE              |
+| Day 6–8   | Compliance UI + interactions          |
+| Day 9–11  | Leads table + persistence             |
+| Day 12–14 | Polish + demo                         |
+
+---
+
+# ⚡ PHASE 1: FOUNDATION (Hours 0–4)
+
+---
+
+## Step 1.1: Repo & Project Init
+
+⏱️ 1.5 hrs
+
+### Commands
+
+```bash
+# Create repo
+mkdir blostem-outreach-agent
+cd blostem-outreach-agent
+git init
+
+# Frontend
+npx create-next-app@latest frontend --typescript --tailwind --app
+cd frontend
+npm install axios zustand lucide-react framer-motion react-hot-toast
+npm install @fontsource/dm-mono @fontsource-variable/cabinet-grotesk
+npx shadcn-ui@latest init
+npx shadcn-ui@latest add button input card table textarea
+
+cd ..
+
+# Backend
+mkdir backend && cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install fastapi uvicorn anthropic tavily-python supabase httpx python-dotenv pydantic
+```
+
+### Success Criteria
+
+* Next.js runs: `npm run dev`
+* FastAPI runs: `uvicorn main:app --reload`
+
+### Failure Points
+
+* ❌ shadcn install issues → run `npx shadcn-ui@latest init` again
+* ❌ Python env issues → recreate venv
+
+📌 Ref: TECH_STACK.md
+
+---
+
+## Step 1.2: Environment Setup
+
+⏱️ 1 hr
+
+### `.env.local` (frontend)
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_ADMIN_KEY=your_admin_key_here
+```
+
+### `.env` (backend)
+
+```bash
+ANTHROPIC_API_KEY=
+TAVILY_API_KEY=
+SUPABASE_URL=
+SUPABASE_SERVICE_KEY=
+ADMIN_API_KEY=your_admin_key_here
+FRONTEND_URL=http://localhost:3000
+PIPELINE_TIMEOUT_SECONDS=55
+ANTHROPIC_MODEL=claude-sonnet-4-20250514
+```
+
+### `.gitignore`
+
+```bash
+.env
+.env.local
+venv/
+node_modules/
+.next/
+```
+
+### Success Criteria
+
+* Env variables load correctly
+* No keys committed
+
+📌 Ref: TECH_STACK.md
+
+---
+
+## Step 1.3: Database Setup
+
+⏱️ 1.5 hrs
+
+### Run in Supabase SQL Editor
+
+```sql
+-- LEADS TABLE
+CREATE TABLE leads (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_url TEXT NOT NULL,
+  company_name TEXT,
+  research_summary TEXT,
+  research_json JSONB,
+  generated_email TEXT,
+  final_email TEXT,
+  compliance_status TEXT DEFAULT 'pending',
+  compliance_notes JSONB,
+  lead_status TEXT DEFAULT 'draft',
+  approved_at TIMESTAMPTZ,
+  pipeline_duration_ms INTEGER,
+  research_duration_ms INTEGER,
+  draft_duration_ms INTEGER,
+  compliance_duration_ms INTEGER,
+  is_fallback_research BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- PIPELINE RUNS
+CREATE TABLE pipeline_runs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  lead_id UUID REFERENCES leads(id) ON DELETE CASCADE,
+  step TEXT,
+  status TEXT,
+  output JSONB,
+  error JSONB,
+  duration_ms INTEGER,
+  started_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+### Verify
+
+* Tables visible in Supabase dashboard
+
+### Failure Points
+
+* ❌ Missing extensions → enable pgcrypto
+
+📌 Ref: BACKEND_STRUCTURE.md
+
+---
+
+# 🧠 PHASE 2: AI BACKEND (Hours 4–16)
+
+---
+
+## Step 2.1: Tavily Integration
+
+⏱️ 1 hr
+
+```python
+from tavily import TavilyClient
+
+client = TavilyClient(api_key="KEY")
+res = client.search("https://jupiter.money")
+print(res)
+```
+
+### Success
+
+* Returns scraped content
+
+---
+
+## Step 2.2: Research Agent
+
+⏱️ 3 hrs
+
+* Use prompt from BACKEND_STRUCTURE.md
+* Endpoint skeleton:
+
+```python
+@app.post("/test/research")
+async def research(url: str):
+    # call tavily
+    # call claude
+    return result
+```
+
+### Test
+
+```bash
+curl -X POST http://localhost:8000/test/research
+```
+
+### Success
+
+* JSON output matches schema
+
+---
+
+## Step 2.3: Drafter Agent
+
+⏱️ 3 hrs
+
+* Input: research_json
+* Output: email
+
+### Success
+
+* Email contains:
+
+  * company name
+  * product reference
+  * CTA
+
+📌 Ref: PRD Feature 3
+
+---
+
+## Step 2.4: Compliance Agent ⭐
+
+⏱️ 4 hrs
+
+Test with:
+
+```text
+"guaranteed high returns"
+```
+
+### Success
+
+* Flag appears
+* Replacement provided
+
+### Failure
+
+* ❌ Phrase not detected → add rule-based fallback
+
+---
+
+## Step 2.5: Full Pipeline + SSE
+
+⏱️ 5 hrs
+
+```python
+@app.post("/api/leads/generate")
+async def generate():
+    yield step_start
+    yield step_complete
+```
+
+### Success
+
+* Stream events in order
+* DB updated
+
+📌 Ref: BACKEND_STRUCTURE.md SSE
+
+---
+
+# 🎨 PHASE 3: FRONTEND (Hours 24–36)
+
+---
+
+## Step 3.1: Design System
+
+⏱️ 2 hrs
+
+* Copy Tailwind config exactly
+* Fonts setup
+
+### Success
+
+* Dark theme applied
+
+📌 Ref: FRONTEND_GUIDELINES.md
+
+---
+
+## Step 3.2: Core Components
+
+⏱️ 6 hrs
+
+Build:
+
+* URL Input
+* Pipeline Log
+* Email Card
+* Compliance Badge ⭐
+* Table
+
+### Success
+
+* Static UI matches spec
+
+---
+
+## Step 3.3: Dashboard + SSE
+
+⏱️ 6 hrs
+
+* Connect Axios
+* Handle SSE
+
+### Success
+
+* Live pipeline log updates
+* Email appears progressively
+
+📌 Ref: APP_FLOW.md
+
+---
+
+# 🌍 PHASE 4: DEPLOY (Hours 36–44)
+
+---
+
+## Step 4.1: Render Backend
+
+⏱️ 3 hrs
+
+`render.yaml`:
+
+```yaml
+services:
+  - type: web
+    name: blostem-backend
+    env: python
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
+```
+
+### Success
+
+* `/health` works
+
+---
+
+## Step 4.2: Vercel Frontend
+
+⏱️ 2 hrs
+
+* Set API URL
+* Fix CORS
+
+### Success
+
+* Full flow works live
+
+---
+
+# 🎯 PHASE 5: POLISH (Days 3–14)
+
+---
+
+## Step 5.1: Seed Data
+
+⏱️ 2 hrs
+
+* Jupiter → PASS
+* Groww → FAIL
+* One approved
+
+---
+
+## Step 5.2: Demo Recording
+
+⏱️ 1 hr
+
+Script:
+
+* Problem → Demo → Impact
+
+---
+
+## Step 5.3: Polish
+
+⏱️ Remaining
+
+* Error states
+* Animations
+* Edge cases
+
+---
+
+# ⚠️ TOP RISKS
+
+| Risk                 | Impact           | Mitigation             |
+| -------------------- | ---------------- | ---------------------- |
+| Claude inconsistency | broken UI        | strict JSON validation |
+| SSE bugs             | no pipeline feel | test with curl stream  |
+| Render cold start    | demo delay       | UptimeRobot ping       |
+| CORS                 | frontend fail    | allow origin           |
+| Compliance weak      | kills wow        | rule-based fallback    |
+
+---
+
+# 🧠 CURSOR SESSION STARTER PROMPT
+
+```text
+You are helping me build Blostem Outreach Agent.
+
+Strict rules:
+- Follow PRD, APP_FLOW, TECH_STACK exactly
+- Do NOT introduce new patterns
+- Maintain SSE pipeline architecture
+- Maintain dark editorial UI
+- Focus on correctness over creativity
+
+Current step:
+[PASTE CURRENT STEP]
+
+Output:
+- Only required code
+- No extra explanation
+```
+
+---
+
+# ✅ FINAL NOTES
+
+* Deploy early → mandatory
+* Do NOT overbuild
+* Compliance experience = differentiator
+
+

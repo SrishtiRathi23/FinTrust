@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg:         #F8F9FA;
+    --surface:    #FFFFFF;
+    --border:     #D1D5DB;
+    --border-dark:#9CA3AF;
+
+    --text-primary:   #111827;
+    --text-secondary: #374151;
+    --text-muted:     #6B7280;
+
+    --navy:   #1A2B49;
+    --saffron:#FF9933;
+    --green:  #138808;
+
+    --fail:     #DC2626;
+    --fail-bg:  #FEF2F2;
+    --fail-text:#991B1B;
+    --fail-border: #FECACA;
+
+    --pass:     #15803D;
+    --pass-bg:  #F0FDF4;
+    --pass-text:#14532D;
+    --pass-border: #BBF7D0;
+
+    --warn:      #B45309;
+    --warn-bg:   #FFFBEB;
+    --warn-text: #92400E;
+    --warn-border:#FDE68A;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    color: var(--navy);
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  input, textarea, button {
+    font-family: inherit;
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: #F3F4F6; }
+  ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
+}
+
+@layer components {
+  /* Section card — like a form panel */
+  .section-card {
+    @apply bg-white border border-[#D1D5DB] rounded-none mb-0;
+  }
+
+  .section-header {
+    @apply flex items-center gap-2 border-b border-[#D1D5DB] px-6 py-4 bg-[#F3F4F6];
+  }
+
+  .section-number {
+    @apply flex h-6 w-6 items-center justify-center rounded-full border border-[#9CA3AF]
+           font-bold text-xs text-[#374151] bg-white shrink-0;
+  }
+
+  .section-title {
+    @apply text-sm font-bold uppercase tracking-wide text-[#1A2B49];
+  }
+
+  .section-body {
+    @apply px-6 py-5;
+  }
+
+  /* Flagged phrase highlight — light red, no glow */
+  .phrase-flagged {
+    background-color: #FEE2E2;
+    color: #991B1B;
+    border-bottom: 2px solid #DC2626;
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+
+  /* Status badges */
+  .badge-pass {
+    @apply inline-flex items-center gap-1.5 rounded border border-[#BBF7D0] bg-[#F0FDF4]
+           px-3 py-1 text-sm font-bold text-[#15803D];
+  }
+
+  .badge-fail {
+    @apply inline-flex items-center gap-1.5 rounded border border-[#FECACA] bg-[#FEF2F2]
+           px-3 py-1 text-sm font-bold text-[#DC2626];
+  }
+
+  .badge-running {
+    @apply inline-flex items-center gap-1.5 rounded border border-[#FDE68A] bg-[#FFFBEB]
+           px-3 py-1 text-sm font-semibold text-[#B45309];
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply bg-[#1A2B49] text-white px-6 py-3 text-sm font-semibold
+           border border-[#1A2B49] rounded-none
+           hover:bg-[#243a63] active:bg-[#111827]
+           disabled:opacity-50 disabled:cursor-not-allowed
+           transition-colors duration-100 w-full;
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    @apply bg-white text-[#1A2B49] px-6 py-3 text-sm font-semibold
+           border border-[#1A2B49] rounded-none
+           hover:bg-[#F3F4F6] active:bg-[#E5E7EB]
+           disabled:opacity-50 disabled:cursor-not-allowed
+           transition-colors duration-100;
+  }
+
+  /* Success button */
+  .btn-success {
+    @apply bg-[#138808] text-white px-6 py-3 text-sm font-semibold
+           border border-[#138808] rounded-none
+           hover:bg-[#166534] active:bg-[#14532D]
+           disabled:opacity-50 disabled:cursor-not-allowed
+           transition-colors duration-100;
+  }
+
+  /* Fix button */
+  .btn-fix {
+    @apply bg-[#FF9933] text-[#1A2B49] px-4 py-2 text-xs font-bold uppercase tracking-wide
+           border border-[#FF9933] rounded-none
+           hover:bg-[#e68a2e] active:bg-[#cc7a29]
+           disabled:opacity-50 disabled:cursor-not-allowed
+           transition-colors duration-100;
+  }
+
+  /* Log entry */
+  .log-line {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .log-line.status-running { color: #B45309; }
+  .log-line.status-complete { color: #15803D; }
+  .log-line.status-failed { color: #DC2626; }
+  .log-line.status-warning { color: #B45309; }
+}
