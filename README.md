@@ -1,62 +1,40 @@
-# 🏢 FinTrust — The Complete AI Compliance & Outreach Engine
+# FinTrust
+**The Vernacular Gateway to Financial Growth**
 
-![Hackathon Submission](https://img.shields.io/badge/Status-Hackathon_Submission-brightgreen.svg)
-![Frontend](https://img.shields.io/badge/Frontend-Next.js_14+%7C_Tailwind-blue)
-![Backend](https://img.shields.io/badge/Backend-FastAPI+%7C_Python-yellow)
-![AI Models](https://img.shields.io/badge/AI-Google_Gemini_2.5_Flash-orange)
+[🚀 Live Demo Link] | [📺 Video Walkthrough] | [🛠️ Technical Brief]
 
-<p align="center">
-  <b>A unified suite for Financial Services encompassing Government-Grade B2B Outreach and Vernacular B2C Advisory (Track 1).</b>
-</p>
+## 📌 Problem Statement
+Financial inclusion in India is often stalled by a **language and jargon barrier**. A user in rural India may have the capital to invest but is intimidated by terms like "12M Tenor," "Small Finance Bank," or "Compounding Frequency." Existing banking apps are built for English-speaking urbanites, leaving millions of vernacular users to rely on hearsay rather than data.
 
----
-
-## 📖 Overview
-
-**FinTrust** fixes the communication gap in highly regulated environments. Whether you are a Business Development (BD) Manager trying to pitch a B2B API without triggering RBI compliance alarms, or a depositor in a Tier-2 city confused by banking jargon, FinTrust leverages LLMs to provide context, clarity, and uncompromising compliance.
-
-FinTrust features two powerful, distinct modules built into a single dashboard:
-
-1. **B2B Outreach Generator (Core):** Scrapes fintech websites autonomously, writes personalized emails, and validates them against strict compliance rule-sets.
-2. **Vernacular FD Advisor (Track 1 Objective):** A bilingual (Hindi/English) B2C chat interface that simplifies complex financial jargon (like "12m Tenor", "p.a.", "SFB") into relatable analogies for Tier-3 depositors and seamlessly guides them through a mock FD booking flow.
+**The Mission:** To build an AI-first advisor that speaks the user's language (Hindi + English) and translates "Bank-speak" into "People-speak," making Fixed Deposits as easy to understand as a local market trade.
 
 ---
 
-## 🚀 How to Use FinTrust
-
-FinTrust provides two distinct journeys you can test live from the single dashboard.
-
-### Journey 1: The B2B Compliance Officer 
-*Use case: You want to securely pitch financial APIs to a business.*
-
-1. Open the app home page (`http://localhost:3000`).
-2. Type in a target company's URL (e.g., `https://razorpay.com`) into the main input bar and hit **Analyze**.
-3. **Watch the Pipeline:** The dashboard will sequentially light up as Tavily scrapes the page, the Research Agent identifies pain points, and the Drafter writes an email.
-4. **Fix Compliance:** If the Drafter uses "banned" sales terms (like *guaranteed* or *zero risk*), the Compliance Module will highlight them in **RED**. Click the **Apply Fix** button to dynamically rewrite the sentence to a compliant state.
-5. **Approve:** Once the panel turns green, click **Approve Email** to copy it.
-
-### Journey 2: The B2C Vernacular FD Advisor (Track 1)
-*Use case: A retail user in a non-metro city needs help understanding an FD offer.*
-
-1. Open the app home page, and look at the top header area.
-2. Click the green **"Launch B2C FD Advisor &rarr;"** button.
-3. **Select Language:** On the Advisor page, use the top-right dropdown to choose your language (e.g., **हिंदी (Hindi)**).
-4. **Ask a Jargon Question:** Click one of the suggested prompts (e.g., *"12M Tenor क्या होता है?"*). Watch the Gemini AI respond natively in Hindi, using simple layman analogies rather than banking terms.
-5. **Trigger the Booking Flow:** Type intent-driven commands playfully: *"I want to invest"* or *"मुझे निवेश करना है"*.
-6. **Book It:** The chatbot will seamlessly intercept your intent and render a slick **UI Booking Card** right in the chat window. Slide the investment sliders and click **Complete KYC** to finish!
+## 🛠️ Core Features (Track 1 Specifics)
+* **Vernacular Interface:** Full support for **Hindi and English** using advanced Gemini LLM layers to fluently navigate conversational and cultural nuances.
+* **Jargon Buster:** Automatically detects complex financial terms (Tenor, p.a., SFB risk parameters) and offers "Explain like I'm 5" definitions using simple, localized analogies.
+* **Intelligent UI Injection:** The AI autonomously intercepts user buying intent and directly renders sleek FD Booking UI sliders right into the chat interface for a seamless one-click checkout.
+* **B2B Outreach Generator (Bonus Ecosystem Suite):** Includes an incredibly robust secondary B2B pipeline that autonomously scrapes target clients via Tavily and drafts highly compliant financial sales emails with dual-layer safety checks.
 
 ---
 
-## 🛠️ Startup Instructions 
+## 🏗️ Technical Architecture
+> **Judge Tip:** This addresses the [Technical Execution (25%)](https://blostem.com/hackathon) criteria.
 
-To run this application locally, you will need to start both the Python backend and the Next.js frontend concurrently.
+* **Frontend:** Built natively with **Next.js 14 App Router, React, and Tailwind CSS**. Employs Zustand for dual-state management (`advisorStore` and `pipelineStore`).
+* **LLM Engine:** Powered by **Google Gemini 2.5 Flash** (via Python SDK) for high-reasoning vernacular responses, multi-turn conversational history, and safety constraints.
+* **Translation Layer:** Natively leverages Gemini's robust multilingual training data for high-accuracy localized translation without external API latency.
+* **Database/API:** Integration with a live scraping API (**Tavily Python SDK**) to fetch live external context for B2B ops, utilizing an intelligent FastAPI backend to serve concurrent generation and booking logic.
 
-### 1. Backend Setup
+---
 
+## 🚀 How to Run Locally
+
+### 1. Backend Setup (FastAPI)
 ```bash
 cd backend
 
-# Create a virtual environment (optional but recommended)
+# Create a virtual environment
 python -m venv venv
 .\venv\Scripts\activate   # Windows
 # source venv/bin/activate # Mac/Linux
@@ -65,22 +43,20 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-**Environment Variables**
-Create a `.env` file in the `backend/` directory with your live keys:
+**Environment Variables (`backend/.env`)**
 ```env
-GEMINI_API_KEY=your_gemini_api_key_here
-TAVILY_API_KEY=your_tavily_api_key_here
+GEMINI_API_KEY=your_gemini_key
+TAVILY_API_KEY=your_tavily_key
 GEMINI_MODEL=gemini-2.5-flash
 ```
 
-**Run the Server**
+**Start the Server**
 ```bash
 uvicorn main:app --reload
 ```
-*The backend will run on `http://localhost:8000`*
+*The backend API will now run on `http://localhost:8000`.*
 
-### 2. Frontend Setup
-
+### 2. Frontend Setup (Next.js)
 ```bash
 cd frontend
 
@@ -90,18 +66,4 @@ npm install
 # Start the development server
 npm run dev
 ```
-*The frontend will run on `http://localhost:3000`*
-
----
-
-## 🧠 Architecture Stack
-
-- **Frontend (`/frontend`)**: 
-  - Next.js 14 App Router, React, Tailwind CSS
-  - **Zustand** (Dual State Management for `pipelineStore` and `advisorStore`)
-- **Backend (`/backend`)**:
-  - FastAPI (Python)
-  - **`google-genai` SDK:** Powers the multi-turn conversational history and strict language extraction.
-  - **`tavily-python` SDK:** Used for scraping live B2B target websites instantly.
-
-*Built with ❤️ for the Blostem Hackathon by FinTrust.*
+*The React user interface will run on `http://localhost:3000`. To access the Track 1 Vernacular Advisor, click the green "Launch B2C FD Advisor" button in the top right header!*

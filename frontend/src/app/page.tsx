@@ -13,6 +13,7 @@ import Link from 'next/link'
 
 export default function HomePage() {
   const [isApproved, setIsApproved] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const {
     logs,
@@ -56,7 +57,13 @@ export default function HomePage() {
                 Generate and validate compliant outreach emails for fintech companies
               </p>
             </div>
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-4 items-center flex-wrap">
+              <Link 
+                href="/faq" 
+                className="text-white hover:text-blue-300 text-sm font-semibold transition-colors underline object-contain"
+              >
+                FAQ
+              </Link>
               <Link 
                 href="/advisor" 
                 className="bg-[#138808] hover:bg-[#0f6c06] text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors shadow-sm"
@@ -191,28 +198,58 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* ── SECTION 5: Approved State ─────────────────────────────── */}
+        {/* ── SECTION 5: Approved State (Final Draft Viewer) ─────────── */}
         {compliance && !loading && isApproved && (
-          <div className="section-card border-t-0 !bg-[#F0FDF4] !border-[#BBF7D0]">
-            <div className="section-body text-center py-10">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#15803D] mb-4">
-                <svg className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-[#14532D] mb-2">Email Approved</h3>
-              <p className="text-[#15803D] mb-8 font-medium">
-                The compliant content has been securely saved and scheduled for sending.
+          <div className="section-card border-t-0 bg-white">
+            <div className="section-header !bg-[#F0FDF4] border-b border-[#BBF7D0]">
+              <span className="section-number !bg-[#15803D]">✓</span>
+              <span className="section-title text-[#14532D]">Final Email Draft Ready</span>
+            </div>
+            <div className="section-body">
+              <p className="text-sm text-gray-600 mb-4">
+                Your fully compliant email has been finalized. You can now copy and paste this directly into your email client.
               </p>
-              <button
-                onClick={reset}
-                className="btn-secondary px-8 shadow-sm"
-              >
-                Generate Another Email
-              </button>
+              
+              <div className="bg-gray-50 border border-gray-200 rounded p-5 mb-6 relative">
+                <div className="text-sm text-gray-800 font-medium mb-3 pb-3 border-b border-gray-200">
+                  <span className="font-bold uppercase tracking-wide text-gray-500 text-xs">Subject: </span>
+                  {draft?.subject}
+                </div>
+                <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">
+                  {editedEmailBody ?? draft?.email_body}
+                </pre>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center">
+                <button
+                  onClick={() => {
+                    const textToCopy = `Subject: ${draft?.subject}\n\n${editedEmailBody ?? draft?.email_body}`;
+                    navigator.clipboard.writeText(textToCopy);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className={`px-8 py-3 rounded text-sm font-bold text-white transition-colors flex items-center justify-center gap-2 ${copied ? 'bg-green-600' : 'bg-blue-600 hover:bg-blue-700'}`}
+                >
+                  {copied ? (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      Copied!
+                    </>
+                  ) : 'Copy to Clipboard'}
+                </button>
+                <button
+                  onClick={reset}
+                  className="btn-secondary px-8 shadow-sm"
+                >
+                  Generate Another Email
+                </button>
+              </div>
             </div>
           </div>
         )}
+
 
         {/* ── Footer ───────────────────────────────────────────────── */}
         <div className="border-t border-[#D1D5DB] pt-6 mt-8">
