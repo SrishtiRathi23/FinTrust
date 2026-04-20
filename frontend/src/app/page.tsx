@@ -7,6 +7,7 @@ import PipelineLog from '@/components/PipelineLog'
 import EmailPreviewCard from '@/components/EmailPreviewCard'
 import ComplianceBadge from '@/components/ComplianceBadge'
 import ResearchPanel from '@/components/ResearchPanel'
+import Link from 'next/link'
 
 // ── Main page ──────────────────────────────────────────────────────────────
 
@@ -49,21 +50,30 @@ export default function HomePage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-lg font-bold text-white">
-                Blostem — Outreach Email Generator
+                FinTrust — Outreach Email Generator
               </h1>
               <p className="text-sm text-[#93C5FD]">
                 Generate and validate compliant outreach emails for fintech companies
               </p>
             </div>
-            {hasResult && !loading && (
-              <button
-                onClick={reset}
-                className="border border-white px-4 py-2 text-sm font-semibold text-white hover:bg-white hover:text-[#1A2B49] transition-colors"
-                aria-label="Start a new email generation"
+            <div className="flex gap-4 items-center">
+              <Link 
+                href="/advisor" 
+                className="bg-[#138808] hover:bg-[#0f6c06] text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors shadow-sm"
               >
-                Start New
-              </button>
-            )}
+                Launch B2C FD Advisor &rarr;
+              </Link>
+
+              {hasResult && !loading && (
+                <button
+                  onClick={reset}
+                  className="border border-white px-4 py-2 text-sm font-semibold text-white hover:bg-white hover:text-[#1A2B49] transition-colors rounded-md"
+                  aria-label="Start a new email generation"
+                >
+                  Start New
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -207,7 +217,7 @@ export default function HomePage() {
         {/* ── Footer ───────────────────────────────────────────────── */}
         <div className="border-t border-[#D1D5DB] pt-6 mt-8">
           <p className="text-center text-xs text-[#9CA3AF]">
-            Blostem AI Outreach Agent · Compliance checks reference RBI/SEBI guidelines ·
+            FinTrust AI Outreach Agent · Compliance checks reference RBI/SEBI guidelines ·
             Always review before sending
           </p>
         </div>

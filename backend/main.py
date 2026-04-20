@@ -3,11 +3,13 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
-from routers import leads
+from routers.leads import router as leads_router
+from routers.advisor import router as advisor_router
 
 app = FastAPI(
-    title="Blostem B2B AI Outreach Agent",
+    title="FinTrust B2B AI Outreach Agent",
     description="AI-powered B2B outreach pipeline API",
     version="0.1.0",
 )
@@ -26,7 +28,8 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 # Routers
 # ---------------------------------------------------------------------------
-app.include_router(leads.router, prefix="/api/leads", tags=["leads"])
+app.include_router(leads_router, prefix="/api/leads", tags=["leads"])
+app.include_router(advisor_router, prefix="/api/advisor", tags=["advisor"])
 
 
 # ---------------------------------------------------------------------------

@@ -8,7 +8,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Blostem — Outreach Email Generator',
+  title: 'FinTrust — Outreach Email Generator',
   description:
     'Generate and validate compliant outreach emails for fintech companies',
 }

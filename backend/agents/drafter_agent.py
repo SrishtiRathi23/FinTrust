@@ -36,7 +36,7 @@ async def run_drafter_agent(research_data: dict) -> dict:
         f"I came across {company_name} and was impressed by your work with {products_str}.\n\n"
         f"We help companies like yours address challenges around {gaps_str} using our AI-powered B2B outreach platform.\n\n"
         f"Would you be open to a 20-minute call this week to explore how we can help?\n\n"
-        f"Best regards,\nBlostem AI"
+        f"Best regards,\nFinTrust AI"
     )
 
     fallback = {
@@ -63,7 +63,7 @@ Requirements:
 3. Include a clear CTA (call-to-action) to schedule a call or meeting
 4. Keep it under 150 words
 5. Professional but conversational tone
-6. Sign off as "Blostem AI Team"
+6. Sign off as "FinTrust AI Team"
 
 Return ONLY a valid JSON object with exactly these keys:
 - subject (string): The email subject line
